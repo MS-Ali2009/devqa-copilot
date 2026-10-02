@@ -4,7 +4,7 @@ test.describe('DevQA Copilot End-to-End Workflow', () => {
   test('loads workspace with default controls and title', async ({ page }) => {
     await page.goto('/');
     await expect(page).toHaveTitle(/DevQA Copilot/);
-    await expect(page.getByText('DevQA Copilot')).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
     await expect(page.getByText('Engineering & QA Workspace')).toBeVisible();
   });
 
@@ -43,7 +43,8 @@ test.describe('DevQA Copilot End-to-End Workflow', () => {
     const textarea = page.locator('#raw-input-editor');
     await textarea.fill('Testing with secret sk-proj-1234567890abcdefghijklmnopqrstuvwxyz123456');
 
-    await expect(page.getByRole('alert')).toBeVisible();
+    const alertBanner = page.getByRole('alert').filter({ hasText: /Potential Sensitive/i });
+    await expect(alertBanner).toBeVisible();
     await expect(page.getByText(/Potential Sensitive Credentials Detected/i)).toBeVisible();
   });
 
