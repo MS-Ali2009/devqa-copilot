@@ -24,6 +24,9 @@
     "tailwind-merge": "^2.6.0",
     "zod": "^3.23.8"
   },
+  "optionalDependencies": {
+    "@next/swc-win32-x64-msvc": "^14.2.23"
+  },
   "devDependencies": {
     "@playwright/test": "^1.50.1",
     "@testing-library/react": "^16.2.0",
