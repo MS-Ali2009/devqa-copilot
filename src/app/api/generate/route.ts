@@ -8,6 +8,7 @@ import { scanForSecrets } from '@/lib/security/secret-scanner';
 import { logger } from '@/lib/security/logger';
 import { generateRequestId, generateUUID } from '@/lib/utils/id-generator';
 import { DevQAGenerateResponse, DevQAErrorResponse } from '@/types/copilot';
+import { saveHistoryItem } from '@/lib/db/history-repo';
 
 export const dynamic = 'force-dynamic';
 
@@ -171,6 +172,35 @@ export async function POST(req: NextRequest) {
         warnings: warnings.length > 0 ? warnings : undefined,
       },
     };
+
+    // 9. Save to Supabase devqa_history if authenticated and no secret detected
+    const userId = req.headers.get('x-user-id');
+    if (userId && !secretScan.hasSecrets) {
+      try {
+        await saveHistoryItem({
+          userId,
+          input: validatedData.rawInput,
+          output: result.markdownOutput,
+          inputType: validatedData.inputType,
+          outputMode: validatedData.outputMode,
+          platform: validatedData.platform,
+          environment: validatedData.targetEnvironment,
+          language: validatedData.outputLanguage,
+        });
+        logger.info({
+          requestId,
+          action: 'HISTORY_SAVED_TO_DB',
+          message: `Saved to Supabase devqa_history for user: ${userId}`,
+        });
+      } catch (dbErr) {
+        // Non-blocking error: do not break UX if DB is unavailable
+        logger.error({
+          requestId,
+          action: 'DB_SAVE_FAILED',
+          message: `Failed to persist to Supabase: ${dbErr instanceof Error ? dbErr.message : String(dbErr)}`,
+        });
+      }
+    }
 
     logger.info({
       requestId,

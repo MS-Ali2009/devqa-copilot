@@ -1,4 +1,5 @@
 import { LLMProvider } from './provider';
+import { GroqProvider } from './groq-provider';
 import { OpenAIProvider } from './openai-provider';
 import { MockLLMProvider } from './mock-provider';
 
@@ -8,11 +9,15 @@ import { MockLLMProvider } from './mock-provider';
  * Priority order:
  * 1. NODE_ENV === 'test' → always MockLLMProvider
  * 2. FORCE_MOCK_PROVIDER === 'true' → MockLLMProvider (use for Preview and CI)
- * 3. OPENAI_API_KEY is set and non-empty → OpenAIProvider
- * 4. Fallback → MockLLMProvider
+ * 3. AI_PROVIDER === 'openai':
+ *    - Uses OpenAIProvider if OPENAI_API_KEY is present
+ *    - Falls back to MockLLMProvider if OPENAI_API_KEY is missing
+ * 4. Default / AI_PROVIDER === 'groq':
+ *    - Uses GroqProvider if GROQ_API_KEY is present
+ *    - Falls back to MockLLMProvider if GROQ_API_KEY is missing
+ * 5. Fallback → MockLLMProvider
  *
  * SECURITY: Never use NEXT_PUBLIC_ prefix for any of these env vars.
- * Set FORCE_MOCK_PROVIDER=true in Vercel Preview and GitHub Actions CI.
  */
 export function getLLMProvider(): LLMProvider {
   // Always use mock in test environment
@@ -25,12 +30,27 @@ export function getLLMProvider(): LLMProvider {
     return new MockLLMProvider();
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  const model = process.env.OPENAI_MODEL || 'gpt-4o-mini';
+  const providerType = (process.env.AI_PROVIDER || 'groq').toLowerCase().trim();
 
-  if (!apiKey || apiKey.trim() === '') {
+  // OpenAI Provider option
+  if (providerType === 'openai') {
+    const openaiKey = process.env.OPENAI_API_KEY?.trim();
+    const model = process.env.OPENAI_MODEL?.trim() || 'gpt-4o-mini';
+
+    if (openaiKey) {
+      return new OpenAIProvider(openaiKey, model);
+    }
     return new MockLLMProvider();
   }
 
-  return new OpenAIProvider(apiKey.trim(), model);
+  // Default: 100% Free Groq Provider
+  const groqKey = process.env.GROQ_API_KEY?.trim();
+  const groqModel = process.env.GROQ_MODEL?.trim() || 'llama-3.3-70b-versatile';
+
+  if (groqKey) {
+    return new GroqProvider(groqKey, groqModel);
+  }
+
+  // Safe fallback if no key is present
+  return new MockLLMProvider();
 }

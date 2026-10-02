@@ -1,15 +1,52 @@
 'use client';
 
-import React from 'react';
-import { Sun, Moon, ShieldCheck, Terminal, Menu } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Sun, Moon, ShieldCheck, Terminal, Menu, LogOut, User, Crown } from 'lucide-react';
 import { useTheme } from './ThemeProvider';
 
 interface HeaderProps {
   onToggleSidebar?: () => void;
 }
 
+interface CurrentUser {
+  id: string;
+  email: string;
+  role: 'owner' | 'user';
+}
+
 export function Header({ onToggleSidebar }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
+  const [user, setUser] = useState<CurrentUser | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.authenticated && data.user) {
+          setUser(data.user);
+        }
+      })
+      .catch(() => {
+        setUser(null);
+      });
+  }, []);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+      setUser(null);
+      router.push('/login');
+      router.refresh();
+    } catch {
+      window.location.href = '/login';
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 h-16 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md transition-colors dark:border-slate-800 light:border-slate-300 light:bg-white/80">
@@ -37,20 +74,48 @@ export function Header({ onToggleSidebar }: HeaderProps) {
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5 sm:gap-3">
         {/* Security indicator badge */}
         <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/60 border border-emerald-800/60 text-emerald-300 text-xs font-medium">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
           <span>Server-Side Isolated</span>
         </div>
 
-        {/* Shortcut tip */}
-        <div className="hidden lg:flex items-center gap-1 px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-400 text-xs font-mono light:bg-slate-100 light:border-slate-300 light:text-slate-600">
-          <span>Run:</span>
-          <kbd className="px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 text-[10px] text-slate-200 light:bg-white light:border-slate-300 light:text-slate-800">
-            Ctrl+Enter
-          </kbd>
-        </div>
+        {/* User Context & Logout */}
+        {user ? (
+          <div className="flex items-center gap-2 pl-2 border-l border-slate-800 light:border-slate-300">
+            <div className="hidden md:flex flex-col text-right">
+              <span className="text-xs font-medium text-slate-200 light:text-slate-800 max-w-[160px] truncate">
+                {user.email}
+              </span>
+              <span className="text-[10px] text-emerald-400 flex items-center justify-end gap-1">
+                {user.role === 'owner' ? (
+                  <>
+                    <Crown className="w-2.5 h-2.5 text-amber-400" />
+                    <span className="text-amber-300 font-semibold uppercase">Owner</span>
+                  </>
+                ) : (
+                  <span>Verified User</span>
+                )}
+              </span>
+            </div>
+
+            <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-900 hover:bg-rose-950/50 hover:text-rose-300 border border-slate-800 hover:border-rose-800/50 text-xs font-medium text-slate-400 transition-colors light:bg-slate-100 light:border-slate-300 light:text-slate-700 light:hover:bg-rose-50 light:hover:text-rose-600"
+              aria-label="Logout"
+              title="Sign Out"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Logout</span>
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-1 text-xs text-slate-500">
+            <User className="w-3.5 h-3.5" />
+          </div>
+        )}
 
         {/* Theme Toggle */}
         <button

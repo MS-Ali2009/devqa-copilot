@@ -15,7 +15,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
 
   const navItems = [
     { label: 'Workspace', href: '/', icon: LayoutDashboard },
-    { label: 'Local History', href: '/history', icon: History },
+    { label: 'History & Artifacts', href: '/history', icon: History },
     { label: 'Settings', href: '/settings', icon: Settings },
     { label: 'About & Privacy', href: '/about', icon: ShieldAlert },
   ];
@@ -80,11 +80,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         <div className="p-4 border-t border-slate-800 space-y-3 light:border-slate-300">
           <div className="p-3 rounded-lg bg-slate-900/80 border border-slate-800/80 text-xs text-slate-400 space-y-1 light:bg-slate-200 light:border-slate-300 light:text-slate-700">
             <div className="font-semibold text-slate-200 light:text-slate-900 flex items-center justify-between">
-              <span>Local-First MVP</span>
+              <span>Free Cloud Stack</span>
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
             </div>
             <p className="text-[11px] leading-relaxed">
-              Local history in this browser only. Inputs are sent to the AI provider for processing. No server database.
+              Powered by Groq AI and Supabase Cloud Database with offline local storage fallback.
             </p>
           </div>
 
