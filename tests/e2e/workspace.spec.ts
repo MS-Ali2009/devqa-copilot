@@ -112,4 +112,40 @@ test.describe('DevQA Copilot End-to-End Workflow & Auth', () => {
     await page.getByRole('link', { name: /History & Artifacts/i }).click();
     await expect(page).toHaveURL(/.*history/, { timeout: 10000 });
   });
+
+  // ─── Test 5: Light / Dark Theme toggle works ─────────────────────────────────
+  test('toggles between dark and light themes', async ({ page, context }) => {
+    const token = await signSession({
+      userId: 'e2e-theme-user',
+      email: 'theme-tester@devqa.local',
+      role: 'user',
+    });
+
+    await context.addCookies([
+      {
+        name: 'devqa_session',
+        value: token,
+        domain: 'localhost',
+        path: '/',
+      },
+    ]);
+
+    await page.goto('/', { waitUntil: 'networkidle' });
+
+    // Initial state has dark mode
+    const html = page.locator('html');
+    await expect(html).toHaveClass(/dark/);
+
+    // Click theme toggle button in header
+    const themeBtn = page.getByRole('button', { name: /toggle dark\/light theme/i });
+    await themeBtn.click();
+
+    // HTML element should now have 'light' class
+    await expect(html).toHaveClass(/light/);
+
+    // Click again to toggle back to dark
+    await themeBtn.click();
+    await expect(html).toHaveClass(/dark/);
+  });
 });
+

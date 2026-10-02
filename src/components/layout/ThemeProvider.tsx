@@ -18,11 +18,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
     const saved = localStorage.getItem('devqa_copilot_theme') as Theme | null;
-    if (saved === 'light' || saved === 'dark') {
-      setTheme(saved);
-      document.documentElement.classList.toggle('light', saved === 'light');
+    if (saved === 'light') {
+      setTheme('light');
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
     } else {
       setTheme('dark');
+      document.documentElement.classList.add('dark');
       document.documentElement.classList.remove('light');
     }
   }, []);
@@ -31,7 +33,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme);
     localStorage.setItem('devqa_copilot_theme', nextTheme);
-    document.documentElement.classList.toggle('light', nextTheme === 'light');
+    if (nextTheme === 'light') {
+      document.documentElement.classList.add('light');
+      document.documentElement.classList.remove('dark');
+    } else {
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    }
   };
 
   // Avoid hydration mismatch by rendering default dark layout initially
