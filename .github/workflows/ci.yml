@@ -8,7 +8,7 @@ on:
 
 jobs:
   audit-and-test:
-    name: Build, Lint & Unit Tests
+    name: Lint, Typecheck, Test & E2E
     runs-on: ubuntu-latest
 
     steps:
@@ -30,10 +30,24 @@ jobs:
           ! grep -r "sk-proj-" src/
           ! grep -r "NEXT_PUBLIC_OPENAI_API_KEY" src/
 
-      - name: Run Unit Tests
-        run: npm test
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit Tests & Coverage Gate
+        run: npm run test:coverage
 
       - name: Build Next.js Application
         run: npm run build
         env:
-          OPENAI_API_KEY: ""
+          FORCE_MOCK_PROVIDER: "true"
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run E2E Tests (Mock Provider)
+        run: npm run test:e2e
+        env:
+          FORCE_MOCK_PROVIDER: "true"

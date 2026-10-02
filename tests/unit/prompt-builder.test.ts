@@ -46,4 +46,29 @@ describe('Prompt Builder & Injection Defense', () => {
 
     expect(modeInstructions).toContain('| ID | Scenario | Preconditions | Steps | Test data | Expected result | Priority | Test type |');
   });
+
+  it('supplies bug report instructions with severity and steps to reproduce', () => {
+    const { modeInstructions } = buildDevQAPrompt({
+      rawInput: 'Crash on submit',
+      inputType: 'bug_report',
+      outputMode: 'bug_report',
+      outputLanguage: 'en',
+    });
+
+    expect(modeInstructions).toContain('# Suggested Severity');
+    expect(modeInstructions).toContain('# Steps to Reproduce');
+  });
+
+  it('supplies acceptance criteria instructions with Given/When/Then requirements', () => {
+    const { modeInstructions } = buildDevQAPrompt({
+      rawInput: 'User login story',
+      inputType: 'user_story',
+      outputMode: 'acceptance_criteria',
+      outputLanguage: 'en',
+    });
+
+    expect(modeInstructions).toContain('Given');
+    expect(modeInstructions).toContain('When');
+    expect(modeInstructions).toContain('Then');
+  });
 });

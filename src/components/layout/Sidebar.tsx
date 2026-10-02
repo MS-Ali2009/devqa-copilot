@@ -84,7 +84,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
             </div>
             <p className="text-[11px] leading-relaxed">
-              No server database. Prompts and outputs reside strictly in your browser.
+              Local history in this browser only. Inputs are sent to the AI provider for processing. No server database.
             </p>
           </div>
 

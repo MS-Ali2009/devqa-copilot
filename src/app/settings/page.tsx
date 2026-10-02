@@ -13,6 +13,7 @@ import {
   Trash2,
   CheckCircle2,
 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { OutputLanguage, OutputMode } from '@/types/copilot';
 
 export default function SettingsPage() {
@@ -22,6 +23,7 @@ export default function SettingsPage() {
   const [defaultLanguage, setDefaultLanguage] = useState<OutputLanguage>('en');
   const [defaultOutputMode, setDefaultOutputMode] = useState<OutputMode>('full_analysis');
   const [historyCount, setHistoryCount] = useState(0);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
 
   useEffect(() => {
     setHistoryCount(getLocalHistory().length);
@@ -45,11 +47,14 @@ export default function SettingsPage() {
   };
 
   const handleClearHistory = () => {
-    if (confirm('Are you sure you want to clear all browser localStorage history?')) {
-      clearAllLocalHistory();
-      setHistoryCount(0);
-      showToast('Local history cleared.', 'success');
-    }
+    setIsConfirmOpen(true);
+  };
+
+  const confirmClearHistory = () => {
+    clearAllLocalHistory();
+    setHistoryCount(0);
+    setIsConfirmOpen(false);
+    showToast('Local history cleared.', 'success');
   };
 
   return (
@@ -165,6 +170,18 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Accessible Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={isConfirmOpen}
+        title="Purge Local Storage History?"
+        description="Are you sure you want to clear all browser localStorage history? This action is permanent and cannot be undone."
+        confirmLabel="Purge History"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={confirmClearHistory}
+        onCancel={() => setIsConfirmOpen(false)}
+      />
     </div>
   );
 }

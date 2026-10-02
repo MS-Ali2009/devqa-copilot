@@ -7,7 +7,8 @@ export class MockLLMProvider implements LLMProvider {
   async generate(
     _systemPrompt: string,
     _userPrompt: string,
-    outputMode: OutputMode
+    outputMode: OutputMode,
+    _signal?: AbortSignal
   ): Promise<LLMProviderResult> {
     const startTime = Date.now();
     // Simulate slight realistic processing latency

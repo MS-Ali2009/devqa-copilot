@@ -13,6 +13,7 @@ export interface LLMProvider {
   generate(
     systemPrompt: string,
     userPrompt: string,
-    outputMode: OutputMode
+    outputMode: OutputMode,
+    signal?: AbortSignal
   ): Promise<LLMProviderResult>;
 }

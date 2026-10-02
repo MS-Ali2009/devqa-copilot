@@ -1,7 +1,27 @@
 import { HistoryItemV1, LocalHistoryStorageV1 } from '@/types/history';
+import { hasHighConfidenceSecret, redactForStorage } from '@/lib/security/secret-scanner';
+
+export { hasHighConfidenceSecret, redactForStorage };
 
 const STORAGE_KEY = 'devqa_copilot_history_v1';
+const LEGACY_KEYS = ['devqa_history', 'devqa_copilot_history', 'devqa_items'];
 const CURRENT_VERSION = 1;
+
+/**
+ * Removes legacy storage keys from localStorage to prevent orphaned secret persistence.
+ */
+function cleanupLegacyKeys(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    for (const key of LEGACY_KEYS) {
+      if (localStorage.getItem(key)) {
+        localStorage.removeItem(key);
+      }
+    }
+  } catch {
+    // Ignore localStorage access failures
+  }
+}
 
 /**
  * Reads and parses history items from browser localStorage safely.
@@ -10,6 +30,7 @@ export function getLocalHistory(): HistoryItemV1[] {
   if (typeof window === 'undefined') return [];
 
   try {
+    cleanupLegacyKeys();
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
 

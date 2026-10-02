@@ -40,9 +40,31 @@ export function scanForSecrets(text: string): SecretScanResult {
 }
 
 /**
+ * Checks whether the text contains any high-confidence secrets.
+ */
+export function hasHighConfidenceSecret(text: string): boolean {
+  return scanForSecrets(text).hasSecrets;
+}
+
+/**
  * Redacts recognized secrets from a string for safe server logging.
  */
 export function redactSecretsForLogging(text: string): string {
+  if (!text) return '';
+  let sanitized = text;
+
+  for (const { regex } of SECRET_PATTERNS) {
+    regex.lastIndex = 0;
+    sanitized = sanitized.replace(regex, '[REDACTED_SECRET]');
+  }
+
+  return sanitized;
+}
+
+/**
+ * Redacts recognized secrets before persistent browser storage.
+ */
+export function redactForStorage(text: string): string {
   if (!text) return '';
   let sanitized = text;
 

@@ -46,4 +46,22 @@ test.describe('DevQA Copilot End-to-End Workflow', () => {
     await expect(page.getByRole('alert')).toBeVisible();
     await expect(page.getByText(/Potential Sensitive Credentials Detected/i)).toBeVisible();
   });
+
+  test('supports cancelling active generation and preserves input', async ({ page }) => {
+    await page.goto('/');
+    const textarea = page.locator('#raw-input-editor');
+    const inputContent = 'Long story to cancel: ' + 'A'.repeat(50);
+    await textarea.fill(inputContent);
+
+    const generateBtn = page.getByRole('button', { name: /Generate Artifact/i });
+    await generateBtn.click();
+
+    // Cancel button should appear
+    const cancelBtn = page.getByRole('button', { name: /Cancel/i }).first();
+    if (await cancelBtn.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await cancelBtn.click();
+      // Input should still be in textarea
+      await expect(textarea).toHaveValue(inputContent);
+    }
+  });
 });

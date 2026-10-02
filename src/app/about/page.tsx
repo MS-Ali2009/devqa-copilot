@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ShieldCheck, Lock, Database, EyeOff, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Lock, Database, EyeOff, CheckCircle2, AlertTriangle, ArrowRight, Info } from 'lucide-react';
 
 export default function AboutPage() {
   return (
@@ -9,10 +9,32 @@ export default function AboutPage() {
       {/* Header */}
       <div className="pb-4 border-b border-slate-800 light:border-slate-300">
         <h2 className="text-xl font-bold text-slate-100 light:text-slate-900 tracking-tight">
-          About & Privacy Architecture
+          About &amp; Privacy Architecture
         </h2>
         <p className="text-xs text-slate-400 light:text-slate-600">
-          DevQA Copilot is engineered with privacy, testability, and strict security guardrails from Day 1.
+          DevQA Copilot is designed with privacy and security guardrails from Day 1. Read below to understand
+          exactly what happens with your data.
+        </p>
+      </div>
+
+      {/* Accurate Data Flow Notice */}
+      <div className="p-4 rounded-xl bg-blue-950/30 border border-blue-800/40 text-xs space-y-2">
+        <div className="flex items-center gap-2 font-semibold text-blue-300">
+          <Info className="w-4 h-4" />
+          <span>How Your Data Flows</span>
+        </div>
+        <p className="text-blue-200/90 leading-relaxed">
+          <strong>Local history</strong> is stored only in this browser&apos;s{' '}
+          <code className="font-mono bg-blue-900/40 px-1 py-0.5 rounded">localStorage</code>. It is never
+          sent to any server by this app.
+        </p>
+        <p className="text-blue-200/90 leading-relaxed">
+          <strong>When you generate an artifact</strong>, the submitted content (your raw input, selected mode,
+          and context fields) is sent to the configured AI provider (OpenAI) for processing via the
+          server-side{' '}
+          <code className="font-mono bg-blue-900/40 px-1 py-0.5 rounded">/api/generate</code> route.
+          This app does not persist prompts or outputs on its server, but the AI provider&apos;s own privacy
+          policy applies to content you submit.
         </p>
       </div>
 
@@ -24,19 +46,20 @@ export default function AboutPage() {
             <span>Local-First History</span>
           </div>
           <p className="text-xs text-slate-400 light:text-slate-600 leading-relaxed">
-            All prompts and generated artifacts are stored strictly inside your browser&apos;s <code className="font-mono text-emerald-400">localStorage</code>.
-            No server database is attached, and no user input is persisted server-side.
+            Generated artifacts are saved to your browser&apos;s{' '}
+            <code className="font-mono text-emerald-400">localStorage</code>. No server database is
+            attached. Clear history from Settings at any time.
           </p>
         </div>
 
         <div className="p-4 rounded-xl bg-slate-950/60 border border-slate-800 space-y-2 light:bg-white light:border-slate-300">
           <div className="flex items-center gap-2 text-emerald-400 font-semibold text-sm">
             <ShieldCheck className="w-4 h-4" />
-            <span>Server-Side Isolated Calls</span>
+            <span>Server-Side Isolated AI Calls</span>
           </div>
           <p className="text-xs text-slate-400 light:text-slate-600 leading-relaxed">
-            API keys are kept exclusively on the server. Your OpenAI API key is never bundled in client JavaScript,
-            never stored in browser cookies or localStorage, and never transmitted to the browser.
+            Your OpenAI API key is kept exclusively on the server. It is never bundled in client-side
+            JavaScript, never stored in browser cookies or localStorage, and never transmitted to the browser.
           </p>
         </div>
 
@@ -46,7 +69,8 @@ export default function AboutPage() {
             <span>Zero Third-Party Analytics</span>
           </div>
           <p className="text-xs text-slate-400 light:text-slate-600 leading-relaxed">
-            No telemetry trackers, Google Analytics, cookies, or session-recording scripts are installed in this application.
+            No telemetry trackers, Google Analytics, cookies, or session-recording scripts are installed
+            in this application.
           </p>
         </div>
 
@@ -56,7 +80,8 @@ export default function AboutPage() {
             <span>Zero Autonomous Writes (Drafts Only)</span>
           </div>
           <p className="text-xs text-slate-400 light:text-slate-600 leading-relaxed">
-            The MVP cannot create Jira tickets, post GitHub comments, or mutate any database. It produces structured drafts for you to review and copy.
+            This MVP cannot create Jira tickets, post GitHub comments, or mutate any external database.
+            It produces structured drafts for you to review, edit, and copy.
           </p>
         </div>
       </div>
@@ -68,9 +93,14 @@ export default function AboutPage() {
           <span>Security Best Practice: Keep Sensitive Credentials Out</span>
         </div>
         <p className="text-amber-200/90 leading-relaxed">
-          While DevQA Copilot includes an automated heuristic secret scanner to warn you about API keys, tokens, and passwords,
-          no heuristic filter is 100% foolproof. Always replace real API keys, customer PII, and production passwords with dummy
-          placeholders before pasting.
+          DevQA Copilot includes an automated heuristic secret scanner to warn you about API keys, tokens,
+          and passwords found in your input. This scanner is <strong>not 100% foolproof</strong> and may
+          miss novel secret formats. Always replace real API keys, customer PII, and production passwords
+          with dummy placeholders before pasting.
+        </p>
+        <p className="text-amber-200/90 leading-relaxed">
+          When a potential secret is detected, the artifact is <strong>not saved to history</strong> by
+          default to protect your data.
         </p>
       </div>
 
@@ -108,9 +138,10 @@ export default function AboutPage() {
           target="_blank"
           rel="noopener noreferrer"
           className="text-emerald-400 hover:underline flex items-center gap-1"
+          aria-label="View source code on GitHub (opens in new tab)"
         >
           <span>GitHub Repository</span>
-          <ArrowRight className="w-3 h-3" />
+          <ArrowRight className="w-3 h-3" aria-hidden="true" />
         </a>
       </div>
     </div>
