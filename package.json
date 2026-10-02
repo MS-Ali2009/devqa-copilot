@@ -13,7 +13,12 @@
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "cli": "tsx src/cli/index.ts",
+    "agent": "tsx src/cli/index.ts agent"
+  },
+  "bin": {
+    "devqa": "./bin/devqa.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",
@@ -47,6 +52,7 @@
     "eslint-config-next": "14.2.23",
     "postcss": "^8.5.2",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.23.15",
     "typescript": "^5.7.3",
     "vitest": "^2.1.8"
   }

@@ -156,6 +156,46 @@ npm run dev
 
 ---
 
+## 💻 Command Line Interface (CLI) & Autonomous Agent
+
+DevQA Copilot includes a complete CLI allowing you to interact with the AI directly from Windows CMD, PowerShell, or bash:
+
+### 1. Interactive Terminal Wizard
+Simply launch the CLI to access an interactive terminal menu:
+```bash
+npm run cli
+```
+
+### 2. Direct Artifact Generation
+Pass tickets or prompts directly via flags and save output to files:
+```bash
+# Generate test cases and save to tests.md
+npm run cli -- -p "User Story: Stripe one-click checkout" -m qa_test_cases -o ./tests.md
+
+# Process a local Jira ticket file into acceptance criteria
+npm run cli -- -f ./ticket.md -m acceptance_criteria -o ./acceptance-criteria.md
+
+# Generate full 15-section analysis in Roman Urdu
+npm run cli -- -p "Bug: Cart item count resets on page refresh" --lang roman_urdu
+```
+
+### 3. Autonomous Coding Agent (CMD Goal Execution)
+Give the agent a task goal, and it will autonomously read/write files and execute terminal commands to achieve it:
+```bash
+# Agent inspects workspace, runs tests, and fixes issues
+npm run cli -- agent "Run vitest and verify all unit tests pass"
+
+# Fast simulation/offline mode
+npm run cli -- agent "Inspect project files" --mock
+```
+
+### 4. Health & Status Check
+```bash
+npm run cli -- status
+```
+
+---
+
 ## 🧪 Testing & Quality Gates
 
 ### TypeScript Typecheck
