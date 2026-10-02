@@ -1,0 +1,39 @@
+name: DevQA Copilot CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  audit-and-test:
+    name: Build, Lint & Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Verify Secret Absence in Source Code
+        run: |
+          echo "Scanning for accidental committed secrets..."
+          ! grep -r "sk-proj-" src/
+          ! grep -r "NEXT_PUBLIC_OPENAI_API_KEY" src/
+
+      - name: Run Unit Tests
+        run: npm test
+
+      - name: Build Next.js Application
+        run: npm run build
+        env:
+          OPENAI_API_KEY: ""
