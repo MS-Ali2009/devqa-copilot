@@ -257,6 +257,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(errorBody, {
       status: statusCode,
       headers: { 'X-Request-Id': requestId },
-    });
+    })
   }
 }
